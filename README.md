@@ -275,4 +275,4 @@ I'm available for hire for freelance or contract work. If you're interested in c
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/J3rry320/Vocalize.ts.git/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/J3rry320/Vocalize.ts/blob/main/LICENSE) file for details.
