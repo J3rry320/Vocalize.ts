@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // Update target to ES6 for better compatibility with modern tools
+    "module": "ESNext", // Use ESNext or ES6 for module format
+    "lib": ["DOM", "ESNext"], // Ensure you are using ESNext to match the module type
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true, // Generate declaration files
+    "sourceMap": true, // Generate source maps
+    "types": ["jest"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

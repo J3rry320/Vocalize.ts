@@ -1,0 +1,243 @@
+# Vocalize.ts
+
+Vocalize.ts is a TypeScript library designed to integrate speech recognition and synthesis into web applications. With Vocalize.ts, you can easily set up voice commands that trigger actions and have your app respond by speaking back to the user.
+
+## Features
+
+- **Speech Recognition:** Easily add voice command recognition to your web app.
+- **Speech Synthesis:** The app can speak back responses based on recognized commands.
+- **Custom TTS Options:** Configure text-to-speech settings for each command action.
+
+# Important Note
+
+**User Event Initialization:** The SpeechSynthesizer initializes and speaks only after a user event (e.g., button click, mouseup) to comply with browser security policies. Otherwise, the library won't be able to talk back to the user. Each command can be recognized, and the callback can be called, but without the TTS feature.
+
+## Motivation
+
+I created Vocalize.ts to simplify the process of adding voice interactions to web applications. Many existing libraries are either too complex or don't provide straightforward integration with speech synthesis. Vocalize aims to bridge this gap by offering a minimal setup and focusing on ease of use.
+
+## Installation
+
+You can install Vocalize via npm or yarn:
+
+```bash
+npm install vocalize.ts
+```
+
+or
+
+```bash
+yarn add vocalize.ts
+```
+
+## Usage
+
+Here’s a basic example of how to use Vocalize:
+
+```typescript
+import { Vocalize } from "vocalize.ts";
+
+// Create a new instance of Vocalize
+const vocalize = new Vocalize({
+  recognitionOptions: {
+    lang: "en-US",
+    continuous: false,
+    interimResults: false,
+  },
+  ttsOptions: {
+    volume: 1,
+    rate: 1,
+    pitch: 1,
+  },
+  onCommandRecognized: (phrase) => {
+    console.log(`Command recognized: ${phrase}`);
+  },
+  onError: (error) => {
+    console.error(`Speech recognition error: ${error.message}`);
+  },
+});
+
+// Register commands
+vocalize.registerCommands([
+  {
+    phrase: "hello world",
+    action: () => ({
+      speak: true,
+      text: "Hello, world!",
+      options: {
+        rate: 1.2,
+      },
+      callback: () => {
+        console.log("Hello World Action Called");
+      },
+    }),
+  },
+]);
+
+// Start listening for commands
+vocalize.startListening();
+```
+
+## Key Concepts
+
+- **User Event Initialization:** Ensure the library is initialized after a user event (e.g., button click) to comply with browser policies.
+- **Command Registration**: Register commands and their corresponding actions.
+- **Speech Synthesis**: Configure how the app speaks back using TTS options.
+
+## Documentation
+
+### Class: `Vocalize`
+
+The `Vocalize` class provides methods to integrate speech recognition and synthesis into your web application.
+
+#### Constructor
+
+```typescript
+constructor(options: VoiceCommandOptions = {})
+```
+
+**Parameters:**
+
+- `options`: An object to configure the instance with the following properties:
+  - `recognitionOptions` (optional): Options for the SpeechRecognition API (see [SpeechRecognition API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)).
+  - `ttsOptions` (optional): Default options for text-to-speech (see [SpeechSynthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)).
+  - `onCommandRecognized` (optional): Callback function that is called when a command is recognized.
+  - `onError` (optional): Callback function that is called when an error occurs during speech recognition.
+
+#### Methods
+
+1.  **`registerCommands(commands: Command[]): void`**
+
+    Registers a list of commands that the library will recognize.
+
+    **Parameters:**
+
+    - `commands`: An array of `Command` objects, where each object has:
+      - `phrase`: The command phrase to recognize.
+      - `action`: A function that returns an object with the following properties:
+        - `speak` (optional): A boolean indicating whether the app should speak back.
+        - `text` (optional): The text to be spoken if `speak` is true.
+        - `options` (optional): TTS options specific to this command.
+        - `callback` (optional): A function to be called when the command is executed.
+
+    **Example:**
+
+```typescript
+vocalize.registerCommands([
+  {
+    phrase: "hello world",
+    action: () => ({
+      speak: true,
+      text: "Hello, world!",
+      options: { rate: 1.2 },
+      callback: () => console.log("Hello World Action Called"),
+    }),
+  },
+]);
+```
+
+2.  **`startListening(): void`**
+
+    Starts listening for speech input.
+
+    **Usage:**
+
+    ```typescript
+    vocalize.startListening();
+    ```
+
+3.  **`stopListening(): void`**
+
+    Stops listening for speech input.
+
+    **Usage:**
+
+    ```typescript
+    vocalize.stopListening();
+    ```
+
+4.  **`setTTSOptions(options: SpeechOptions): void`**
+
+    Sets the default text-to-speech options for the instance.
+
+    **Parameters:**
+
+    - `options`: An object with TTS settings:
+      - `volume` (optional): Volume level (0.0 to 1.0).
+      - `rate` (optional): Speech rate (0.1 to 10).
+      - `pitch` (optional): Speech pitch (0 to 2).
+      - `voice` (optional): `SpeechSynthesisVoice` object.
+
+    **Example:**
+
+    ```typescript
+    vocalize.setTTSOptions({ volume: 1, rate: 1, pitch: 1 });
+    ```
+
+5.  **`getVoices(): Promise<SpeechSynthesisVoice[]>`**
+
+    Retrieves the available voices for speech synthesis.
+
+    **Returns:**
+
+    - A promise that resolves with an array of `SpeechSynthesisVoice` objects.
+
+    **Usage:**
+
+    ```typescript
+    vocalize.getVoices().then((voices) => console.log(voices));
+    ```
+
+### Types
+
+#### `Command`
+
+Represents a command and its associated action.
+
+**Properties:**
+
+- `phrase`: The phrase to recognize.
+- `action`: A function returning an object with:
+  - `speak` (optional): Boolean to determine if the app should speak.
+  - `text` (optional): Text to be spoken.
+  - `options` (optional): TTS options specific to the command.
+  - `callback` (optional): Function to call upon execution.
+
+#### `SpeechOptions`
+
+Options for text-to-speech synthesis.
+
+**Properties:**
+
+- `volume` (optional): Volume level (0.0 to 1.0).
+- `rate` (optional): Speech rate (0.1 to 10).
+- `pitch` (optional): Speech pitch (0 to 2).
+- `voice` (optional): `SpeechSynthesisVoice` object.
+- Refer to MDN Docs to learn about other config properties that can be passed as SpeechOptions
+
+#### `VoiceCommandOptions`
+
+Options for configuring the `Vocalize` instance.
+
+**Properties:**
+
+- `recognitionOptions` (optional): Configuration for speech recognition.
+- `ttsOptions` (optional): Default TTS settings.
+- `onCommandRecognized` (optional): Callback for when a command is recognized.
+- `onError` (optional): Callback for errors during recognition.
+
+Please refer to the MDN docs to learn more about the config options
+[SpeechRecognition API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)
+[SpeechSynthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
+
+## Contributing
+
+We welcome contributions! If you have ideas for new features or improvements, please open an issue or submit a pull request.
+
+### Available to Hire
+
+I'm available for hire for freelance or contract work. If you're interested in collaborating or need custom development, please reach out.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/J3rry320/Vocalize.ts.git/LICENSE) file for details.
