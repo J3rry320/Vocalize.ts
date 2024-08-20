@@ -14,11 +14,11 @@ Vocalize.ts is a TypeScript library designed to integrate speech recognition and
 
 ## Motivation
 
-I created Vocalize.ts to simplify the process of adding voice interactions to web applications. Many existing libraries are either too complex or don't provide straightforward integration with speech synthesis. Vocalize aims to bridge this gap by offering a minimal setup and focusing on ease of use.
+I created Vocalize.ts to simplify the process of adding voice interactions to web applications. Many existing libraries are either too complex or don't provide straightforward integration with speech synthesis. Vocalize.ts aims to bridge this gap by offering a minimal setup and focusing on ease of use.
 
 ## Installation
 
-You can install Vocalize via npm or yarn:
+You can install Vocalize.ts via npm or yarn:
 
 ```bash
 npm install vocalize.ts
@@ -32,7 +32,7 @@ yarn add vocalize.ts
 
 ## Usage
 
-Here’s a basic example of how to use Vocalize:
+Here’s a basic example of how to use Vocalize.ts:
 
 ```typescript
 import { Vocalize } from "vocalize.ts";
@@ -233,6 +233,41 @@ Please refer to the MDN docs to learn more about the config options
 ## Contributing
 
 We welcome contributions! If you have ideas for new features or improvements, please open an issue or submit a pull request.
+
+### Running and Testing
+
+To ensure a smooth contribution process, please follow these instructions:
+
+1. **Install Dependencies:**
+   First, make sure you have all the necessary dependencies installed. Run:
+   ```bash
+   npm install
+   ```
+2. **Build the Project:** Before running or testing the project, build it with:
+   ```bash
+   npm run build
+   ```
+3. **Run the Development Server:** To start the development server with live reloading, use:
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Run Tests:** To run the test suite, use:
+   ```bash
+   npm test
+   ```
+5. **Clean Build Artifacts:** To remove the build artifacts, run:
+
+   ```bash
+   npm run clean
+   ```
+
+6. **Publish Changes:** To publish the updated package, make sure you’ve cleaned and built it first:
+
+   ```bash
+   npm run prepublishOnly
+   ```
 
 ### Available to Hire
 
