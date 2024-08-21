@@ -4,12 +4,16 @@ export class SpeechRecognizer {
   private recognition: SpeechRecognition;
 
   constructor(options: RecognitionOptions = {}) {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
+    if (
+      !("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
+    ) {
       throw new Error("SpeechRecognition is not supported in this browser.");
     }
-    this.recognition = new SpeechRecognition();
+
+    const SpeechRecognitionConstructor = (window.SpeechRecognition ||
+      window.webkitSpeechRecognition) as any;
+
+    this.recognition = new SpeechRecognitionConstructor();
 
     Object.defineProperty(this.recognition, "lang", {
       value: options.lang || "en-US",

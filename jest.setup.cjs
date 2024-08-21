@@ -1,11 +1,5 @@
 // Mock class for SpeechRecognition
 class MockSpeechRecognition {
-  lang;
-  continuous;
-  interimResults;
-  onresult;
-  onerror;
-
   constructor() {
     this.lang = "en-US";
     this.continuous = false;
@@ -14,8 +8,8 @@ class MockSpeechRecognition {
     this.onerror = null;
   }
 
-  start() {}
-  stop() {}
+  start = jest.fn();
+  stop = jest.fn();
 
   // Method to simulate recognition results
   simulateResult(event) {
@@ -25,32 +19,35 @@ class MockSpeechRecognition {
   }
 }
 
-globalThis.SpeechRecognition = MockSpeechRecognition;
-globalThis.webkitSpeechRecognition = MockSpeechRecognition;
 // Mock class for SpeechSynthesisUtterance
 class MockSpeechSynthesisUtterance {
-  text;
   constructor(text) {
     this.text = text;
   }
 }
 
 // Mock SpeechSynthesis
+const mockVoices = [
+  {
+    name: "Google US English",
+    lang: "en-US",
+    default: false,
+    localService: true,
+    voiceURI: "googleusenglish",
+  },
+];
+
 globalThis.speechSynthesis = {
   speak: jest.fn(),
   pause: jest.fn(),
   resume: jest.fn(),
   cancel: jest.fn(),
-  getVoices: jest.fn(() => [
-    {
-      name: "Google US English",
-      lang: "en-US",
-      default: false,
-      localService: true,
-      voiceURI: "googleusenglish",
-    },
-  ]),
+  getVoices: jest.fn(() => mockVoices),
 };
 
 // Mock SpeechSynthesisUtterance
 globalThis.SpeechSynthesisUtterance = MockSpeechSynthesisUtterance;
+
+// Assign globalThis properties to `global` for Jest environment
+globalThis.SpeechRecognition = MockSpeechRecognition;
+globalThis.webkitSpeechRecognition = MockSpeechRecognition;

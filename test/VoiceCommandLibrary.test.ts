@@ -5,7 +5,7 @@ class MockSpeechRecognition {
   lang: string;
   continuous: boolean;
   interimResults: boolean;
-  onresult: ((event: Event) => void) | null;
+  onresult: ((event: any) => void) | null;
   onerror: ((event: Event) => void) | null;
 
   constructor() {
@@ -19,7 +19,6 @@ class MockSpeechRecognition {
   start() {}
   stop() {}
 
-  // Method to simulate recognition results
   simulateResult(event: any) {
     if (this.onresult) {
       this.onresult(event);
@@ -27,9 +26,34 @@ class MockSpeechRecognition {
   }
 }
 
-// Ensure SpeechRecognition is correctly mocked
-globalThis.SpeechRecognition = MockSpeechRecognition;
-globalThis.webkitSpeechRecognition = MockSpeechRecognition;
+class MockSpeechSynthesisUtterance {
+  text: string;
+
+  constructor(text: string) {
+    this.text = text;
+  }
+}
+
+// Mock SpeechSynthesis
+const mockVoices = [
+  {
+    name: "Google US English",
+    lang: "en-US",
+    default: false,
+    localService: true,
+    voiceURI: "googleusenglish",
+  },
+];
+
+(globalThis as any).speechSynthesis = {
+  speak: jest.fn(),
+  pause: jest.fn(),
+  resume: jest.fn(),
+  cancel: jest.fn(),
+  getVoices: jest.fn(() => mockVoices),
+};
+
+(globalThis as any).SpeechSynthesisUtterance = MockSpeechSynthesisUtterance;
 
 describe("VoiceCommandLibrary", () => {
   let mockRecognition: MockSpeechRecognition;
@@ -37,10 +61,8 @@ describe("VoiceCommandLibrary", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Create a new instance of MockSpeechRecognition for each test
     mockRecognition = new MockSpeechRecognition();
 
-    // Spy on methods
     jest
       .spyOn(globalThis.speechSynthesis, "speak")
       .mockImplementation(jest.fn());
@@ -54,8 +76,9 @@ describe("VoiceCommandLibrary", () => {
       },
     ]);
 
-    // Replace SpeechRecognition with mock
-    globalThis.SpeechRecognition = jest.fn(() => mockRecognition) as any;
+    (globalThis as any).SpeechRecognition = jest.fn(
+      () => mockRecognition
+    ) as any;
   });
 
   it("should register and recognize commands with custom TTS options", () => {
@@ -63,6 +86,7 @@ describe("VoiceCommandLibrary", () => {
       text: "Test",
       speak: true,
       options: { volume: 0.5, rate: 1.5 },
+      callback: () => {},
     }));
     const commands: Command[] = [
       { phrase: "test command", action: mockAction },
@@ -73,7 +97,6 @@ describe("VoiceCommandLibrary", () => {
     });
     library.registerCommands(commands);
 
-    // Simulate speech recognition by invoking the mock directly
     mockRecognition.simulateResult({
       results: [[{ transcript: "test command" }]],
     });
@@ -82,8 +105,8 @@ describe("VoiceCommandLibrary", () => {
     expect(globalThis.speechSynthesis.speak).toHaveBeenCalledWith(
       expect.objectContaining({
         text: "Test",
-        volume: 1.0, // Verify that the default TTS options are applied
-        rate: 1.0,
+        volume: 0.5,
+        rate: 1.5,
       })
     );
   });
@@ -96,9 +119,83 @@ describe("VoiceCommandLibrary", () => {
 
     const library = new Vocalize({ recognitionOptions });
 
-    // Use the private property to access the recognizer and check options
     const recognizer = (library as any).speechRecognizer;
     expect(recognizer.recognition.lang).toBe("es-ES");
     expect(recognizer.recognition.continuous).toBe(true);
+  });
+
+  test("should invoke error callback on speech recognition error", () => {
+    const mockRecognition = new MockSpeechRecognition();
+    const onErrorMock = jest.fn();
+    const library = new Vocalize({ onError: onErrorMock });
+
+    const errorEvent = new Error("Unknown error") as any;
+
+    mockRecognition.onerror?.(errorEvent);
+
+    expect(onErrorMock).toHaveBeenCalledWith(errorEvent);
+  });
+
+  it("should stop listening when stopListening is called", () => {
+    const stopSpy = jest.spyOn(mockRecognition, "stop");
+
+    const library = new Vocalize();
+    library.stopListening();
+
+    expect(stopSpy).toHaveBeenCalled();
+  });
+
+  it("should correctly update TTS options", () => {
+    const library = new Vocalize();
+    const newOptions = { volume: 0.75, rate: 1.2 };
+
+    library.setTTSOptions(newOptions);
+    expect((library as any).ttsOptions).toEqual(newOptions);
+  });
+
+  it("should handle custom command callback function", () => {
+    const mockCallback = jest.fn();
+    const mockAction = jest.fn(() => ({
+      text: "Test",
+      speak: true,
+      callback: mockCallback,
+    }));
+    const commands: Command[] = [
+      { phrase: "test command", action: mockAction },
+    ];
+
+    const library = new Vocalize();
+    library.registerCommands(commands);
+
+    mockRecognition.simulateResult({
+      results: [[{ transcript: "test command" }]],
+    });
+
+    expect(mockCallback).toHaveBeenCalled();
+  });
+
+  it("should handle onCommandRecognized callback function", () => {
+    const mockOnCommandRecognized = jest.fn();
+
+    const library = new Vocalize({
+      onCommandRecognized: mockOnCommandRecognized,
+    });
+
+    const mockAction = jest.fn(() => ({
+      text: "Test",
+      speak: false,
+    }));
+
+    const commands: Command[] = [
+      { phrase: "test command", action: mockAction },
+    ];
+
+    library.registerCommands(commands);
+
+    mockRecognition.simulateResult({
+      results: [[{ transcript: "test command" }]],
+    });
+
+    expect(mockOnCommandRecognized).toHaveBeenCalledWith(commands[0]);
   });
 });

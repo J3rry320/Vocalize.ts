@@ -12,6 +12,9 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build"
   },
+  "files": [
+    "dist/"
+  ],
   "keywords": [
     "voice",
     "commands",
