@@ -26,7 +26,6 @@ export class CommandProcessor {
       }
       return response;
     } else {
-      console.warn(`No command found for phrase: "${phrase}"`);
       return;
     }
   }
