@@ -23,19 +23,30 @@ export class Vocalize {
     this.ttsOptions = options.ttsOptions || {};
     this.moodSettings = defaultMoodSettings || {};
     this.currentMood = options.presetMood || null;
-    this.speechRecognizer.onSpeechRecognized((phrase: string) => {
-      const response = this.commandProcessor.executeCommand(phrase);
-      if (response) {
-        const effectiveOptions = this.getEffectiveTTSOptions(response.options);
-        if (response.speak) {
-          this.speechSynthesizer.speak(response.text, effectiveOptions);
+    try {
+      this.speechRecognizer.onSpeechRecognized((phrase: string) => {
+        const response = this.commandProcessor.executeCommand(phrase);
+        if (response) {
+          const effectiveOptions = this.getEffectiveTTSOptions(
+            response.options
+          );
+          if (response.speak) {
+            this.speechSynthesizer.speak(response.text, effectiveOptions);
+          }
+          if (options.onCommandRecognized) {
+            options.onCommandRecognized(phrase);
+          }
+        } else {
+          if (options.onCommandUnrecognized) {
+            options.onCommandUnrecognized(phrase);
+          }
         }
+      });
+    } catch (error: any) {
+      if (options.onError) {
+        options.onError(error);
       }
-
-      if (options.onCommandRecognized) {
-        options.onCommandRecognized(phrase);
-      }
-    });
+    }
 
     if (options.onError) {
       this.speechRecognizer.onError(options.onError);

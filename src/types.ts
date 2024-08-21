@@ -16,6 +16,7 @@ export interface CommandResponse {
 export interface VoiceCommandOptions {
   language?: string;
   onCommandRecognized?: (command: string) => void;
+  onCommandUnrecognized?: (command: string) => void;
   onError?: (error: Error) => void;
   ttsOptions?: SpeechOptions; // Default TTS options
   recognitionOptions?: RecognitionOptions; // Default speech recognition options

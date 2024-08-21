@@ -49,8 +49,12 @@ const vocalize = new Vocalize({
     rate: 1,
     pitch: 1,
   },
+  presetMood: "happy",
   onCommandRecognized: (phrase) => {
     console.log(`Command recognized: ${phrase}`);
+  },
+  onCommandUnrecognized: (phrase) => {
+    console.log(`Command not recognized: ${phrase}`);
   },
   onError: (error) => {
     console.error(`Speech recognition error: ${error.message}`);
@@ -102,6 +106,7 @@ constructor(options: VoiceCommandOptions = {})
   - `recognitionOptions` (optional): Options for the SpeechRecognition API (see [SpeechRecognition API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)).
   - `ttsOptions` (optional): Default options for text-to-speech (see [SpeechSynthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)).
   - `onCommandRecognized` (optional): Callback function that is called when a command is recognized.
+  - `onCommandUnRecognized` (optional): Callback function that is called when a command is not recognized.
   - `onError` (optional): Callback function that is called when an error occurs during speech recognition.
   - `presetMood` (optional): This option allows you to configure the text-to-speech (TTS) settings based on predefined mood settings. Look below to find the default settings
 
