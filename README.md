@@ -1,7 +1,14 @@
 # Vocalize.ts
 
 ![logo](https://i.ibb.co/RSHbfQD/Vocalize.png)
+
 Vocalize.ts is a TypeScript library designed to integrate speech recognition and synthesis into web applications. With Vocalize.ts, you can easily set up voice commands that trigger actions and have your app respond by speaking back to the user.
+
+![npm version](https://img.shields.io/npm/v/vocalize.ts)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/vocalize.ts)
+![License](https://img.shields.io/github/license/j3rry320/vocalize.ts)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)
+![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
 
 ## Features
 
