@@ -103,6 +103,7 @@ constructor(options: VoiceCommandOptions = {})
   - `ttsOptions` (optional): Default options for text-to-speech (see [SpeechSynthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)).
   - `onCommandRecognized` (optional): Callback function that is called when a command is recognized.
   - `onError` (optional): Callback function that is called when an error occurs during speech recognition.
+  - `presetMood` (optional): This option allows you to configure the text-to-speech (TTS) settings based on predefined mood settings. Look below to find the default settings
 
 #### Methods
 
@@ -166,7 +167,6 @@ vocalize.registerCommands([
       - `volume` (optional): Volume level (0.0 to 1.0).
       - `rate` (optional): Speech rate (0.1 to 10).
       - `pitch` (optional): Speech pitch (0 to 2).
-      - `voice` (optional): `SpeechSynthesisVoice` object.
 
     **Example:**
 
@@ -187,6 +187,22 @@ vocalize.registerCommands([
     ```typescript
     vocalize.getVoices().then((voices) => console.log(voices));
     ```
+
+6.  **`setVoices(): Promise<void>`**
+    Sets a particular voice for speech synthesis based on a combination of language, name, and voiceURI.
+    **Parameters:**
+
+    - `options`: An object including the parameters to look up the voice:
+      - `language`: The language code to filter voices (e.g., "en-US").
+      - `name` (optional): The name of the voice to select.
+      - `voiceURI` (optional): The URI of the voice to select.
+      ```typescript
+      await vocalize.setVoice({
+        language: "en-US",
+        name: "Rishi",
+        voiceURI: "Rishi",
+      });
+      ```
 
 ### Types
 
@@ -212,7 +228,6 @@ Options for text-to-speech synthesis.
 - `volume` (optional): Volume level (0.0 to 1.0).
 - `rate` (optional): Speech rate (0.1 to 10).
 - `pitch` (optional): Speech pitch (0 to 2).
-- `voice` (optional): `SpeechSynthesisVoice` object.
 - Refer to MDN Docs to learn about other config properties that can be passed as SpeechOptions
 
 #### `VoiceCommandOptions`
@@ -229,6 +244,23 @@ Options for configuring the `Vocalize` instance.
 Please refer to the MDN docs to learn more about the config options
 [SpeechRecognition API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)
 [SpeechSynthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
+
+### Preset Mood Configuration
+
+This object contains predefined TTS settings for various moods:
+
+```json
+{
+  "happy": { "volume": 1.0, "rate": 1.2, "pitch": 1.5 },
+  "calm": { "volume": 0.8, "rate": 0.9, "pitch": 1.0 },
+  "sad": { "volume": 0.7, "rate": 0.8, "pitch": 0.8 },
+  "angry": { "volume": 1.0, "rate": 1.1, "pitch": 1.3 },
+  "surprised": { "volume": 1.0, "rate": 1.2, "pitch": 1.4 },
+  "neutral": { "volume": 1.0, "rate": 1.0, "pitch": 1.0 }
+}
+```
+
+**Note:** If the `presetMood` provided does not match any of the predefined moods, the library will use the default TTS settings specified in `ttsOptions`.
 
 ## Contributing
 

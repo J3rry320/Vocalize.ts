@@ -1,12 +1,13 @@
 {
   "name": "vocalize.ts",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "A TypeScript library for integrating voice commands and speech synthesis into web applications. Easily set up voice interactions with custom text-to-speech options and speech recognition.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
+  "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "microbundle",
+    "build": "microbundle --compress --visualize",
     "dev": "microbundle watch",
     "test": "jest",
     "clean": "rm -rf dist",

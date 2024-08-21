@@ -81,7 +81,26 @@ export class Vocalize {
   getVoices(): Promise<SpeechSynthesisVoice[]> {
     return this.speechSynthesizer.getVoices();
   }
+  /**
+   * Sets the voice for speech synthesis based on provided criteria.
+   * @param {Object} criteria - The criteria for selecting the voice.
+   * @param {string} criteria.language - The language code to filter voices.
+   * @param {string} [criteria.name] - The name of the voice to select (optional).
+   * @param {string} [criteria.voiceURI] - The URI of the voice to select (optional).
+   * @returns {Promise<void>} - A promise that resolves when the voice is set.
+   */
 
+  setVoice({
+    language,
+    name,
+    voiceURI,
+  }: {
+    language: string;
+    name?: string;
+    voiceURI?: string;
+  }): Promise<void> {
+    return this.speechSynthesizer.setVoice({ language, name, voiceURI });
+  }
   /**
    * Sets the current mood for speech synthesis.
    * @param {string} mood - The mood to set, which maps to preset TTS options.

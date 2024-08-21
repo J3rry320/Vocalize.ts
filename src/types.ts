@@ -1,3 +1,4 @@
+import { defaultMoodSettings } from "./utils";
 import { MoodSettings } from "./Vocalize";
 
 export interface Command {
@@ -18,7 +19,7 @@ export interface VoiceCommandOptions {
   onError?: (error: Error) => void;
   ttsOptions?: SpeechOptions; // Default TTS options
   recognitionOptions?: RecognitionOptions; // Default speech recognition options
-  presetMood?: string; // Map of moods to TTS options
+  presetMood?: "happy" | "calm" | "sad" | "angry" | "surprised" | "neutral"; // Map of moods to TTS options
 }
 
 export interface SpeechOptions {
