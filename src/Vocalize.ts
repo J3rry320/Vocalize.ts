@@ -2,26 +2,34 @@ import { CommandProcessor } from "./CommandProcessor";
 import { SpeechRecognizer } from "./SpeechRecogniser";
 import { SpeechSynthesizer } from "./SpeechSynthesizer";
 import { Command, SpeechOptions, VoiceCommandOptions } from "./types";
+import { defaultMoodSettings } from "./utils";
+
+export interface MoodSettings {
+  [mood: string]: SpeechOptions;
+}
 
 export class Vocalize {
   private commandProcessor: CommandProcessor;
   private speechRecognizer: SpeechRecognizer;
   private speechSynthesizer: SpeechSynthesizer;
   private ttsOptions: SpeechOptions;
+  private moodSettings: MoodSettings;
+  private currentMood: string | null = null;
 
   constructor(options: VoiceCommandOptions = {}) {
     this.commandProcessor = new CommandProcessor();
     this.speechSynthesizer = new SpeechSynthesizer();
     this.speechRecognizer = new SpeechRecognizer(options.recognitionOptions);
     this.ttsOptions = options.ttsOptions || {};
-
+    this.moodSettings = defaultMoodSettings || {};
+    this.currentMood = options.presetMood || null;
     this.speechRecognizer.onSpeechRecognized((phrase: string) => {
       const response = this.commandProcessor.executeCommand(phrase);
-      if (response && response.speak) {
-        this.speechSynthesizer.speak(
-          response.text,
-          response.options || this.ttsOptions
-        );
+      if (response) {
+        const effectiveOptions = this.getEffectiveTTSOptions(response.options);
+        if (response.speak) {
+          this.speechSynthesizer.speak(response.text, effectiveOptions);
+        }
       }
 
       if (options.onCommandRecognized) {
@@ -72,5 +80,27 @@ export class Vocalize {
    */
   getVoices(): Promise<SpeechSynthesisVoice[]> {
     return this.speechSynthesizer.getVoices();
+  }
+
+  /**
+   * Sets the current mood for speech synthesis.
+   * @param {string} mood - The mood to set, which maps to preset TTS options.
+   */
+  setMood(mood: string): void {
+    this.currentMood = mood;
+  }
+
+  /**
+   * Gets the effective TTS options, considering the preset mood.
+   * @param {SpeechOptions | undefined} commandOptions - The command-specific TTS options.
+   * @returns {SpeechOptions} - The final TTS options to use.
+   */
+  private getEffectiveTTSOptions(
+    commandOptions?: SpeechOptions
+  ): SpeechOptions {
+    const moodOptions = this.currentMood
+      ? this.moodSettings[this.currentMood]
+      : {};
+    return { ...this.ttsOptions, ...commandOptions, ...moodOptions };
   }
 }

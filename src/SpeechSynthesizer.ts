@@ -2,6 +2,7 @@ import { SpeechOptions } from "./types";
 
 export class SpeechSynthesizer {
   private synth: SpeechSynthesis;
+  private currentVoice: SpeechSynthesisVoice | null = null;
 
   constructor() {
     this.synth = window.speechSynthesis;
@@ -35,7 +36,7 @@ export class SpeechSynthesizer {
       if (options.volume !== undefined) utterance.volume = options.volume;
       if (options.rate !== undefined) utterance.rate = options.rate;
       if (options.pitch !== undefined) utterance.pitch = options.pitch;
-      if (options.voice !== undefined) utterance.voice = options.voice;
+      if (this.currentVoice) utterance.voice = this.currentVoice;
 
       // Debugging utterance settings
       if (this.synth.getVoices().length === 0) {
@@ -64,6 +65,47 @@ export class SpeechSynthesizer {
       throw new Error(
         `Speech synthesis failed: ${error.message}. Ensure that a user action has been performed on the webpage.`
       );
+    }
+  }
+
+  /**
+   * Sets the voice for speech synthesis based on provided criteria.
+   * @param {Object} criteria - The criteria for selecting the voice.
+   * @param {string} criteria.language - The language code to filter voices.
+   * @param {string} [criteria.name] - The name of the voice to select (optional).
+   * @param {string} [criteria.voiceURI] - The URI of the voice to select (optional).
+   * @returns {Promise<void>} - A promise that resolves when the voice is set.
+   */
+  async setVoice({
+    language,
+    name,
+    voiceURI,
+  }: {
+    language: string;
+    name?: string;
+    voiceURI?: string;
+  }): Promise<void> {
+    const voices = await this.getVoices();
+
+    // Try to find the voice matching the provided criteria
+    this.currentVoice =
+      voices.find(
+        (voice) =>
+          voice.lang === language &&
+          (name ? voice.name === name : true) &&
+          (voiceURI ? voice.voiceURI === voiceURI : true)
+      ) || null;
+
+    if (!this.currentVoice) {
+      // If no matching voice found, set to the first available voice
+      this.currentVoice = voices[0] || null;
+      console.warn(
+        `No voice found matching the criteria. Defaulting to the first available voice.`
+      );
+    }
+
+    if (!this.currentVoice) {
+      console.error(`No voices available to set.`);
     }
   }
 
